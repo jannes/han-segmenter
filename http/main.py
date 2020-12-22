@@ -5,15 +5,83 @@ server = Flask(__name__)
 seg = pkuseg.pkuseg()
 
 
-@server.route('/segment', methods=['POST'])
-def segment():
+# JSON input schema:
+# {
+#     "text": <STRING>
+# }
+# JSON output schema:
+# {
+#     "text": [<STRING>, ...]
+# }
+@server.route('/segmentString', methods=['POST'])
+def segment_single():
     body = request.get_json()
-    if body is None or 'text' not in body:
-        abort(400)
-    if 'text' in body:
+    try:
         text = body['text']
-        segmented = seg.cut(text)
-        return {'segmented': segmented}
+        if type(text) != str:
+            abort(400)
+    except KeyError:
+        abort(400)
+    segmented = seg.cut(text)
+    return {'text': segmented}
+
+
+# JSON input schema:
+# {
+#     "sections": [<STRING>, ...]
+# }
+# JSON output schema:
+# {
+#     "sections": [[<STRING>, ...], ...]
+# }
+@server.route('/segmentStrings', methods=['POST'])
+def segment_multiple():
+    body = request.get_json()
+    try:
+        sections = body['sections']
+    except KeyError:
+        abort(400)
+    if type(sections) != list:
+        abort(400)
+    segmented_sections = list()
+    for section in sections:
+        if type(section) != str:
+            abort(400)
+        segmented_sections.append(seg.cut(section))
+    return {'sections': segmented_sections}
+
+
+# JSON input schema:
+# {
+#     "title": <STRING>,
+#     "sections": [
+#         {"title": <STRING>, "content": <STRING>},
+#         ...
+#     ]
+# }
+# JSON output schema:
+# {
+#     "sections": [[<STRING>, ...], ...]
+# }
+@server.route('/segmentText', methods=['POST'])
+def segment_book():
+    text = request.get_json()
+    segmented_sections = list()
+    try:
+        if type(text['title']) != str:
+            abort(400)
+        for i, section in enumerate(text['sections']):
+            if type(section['title']) != str or type(section['content']) != str:
+                abort(400)
+            s = ''
+            if i == 0:
+                s += text['title']
+            s += section['title']
+            s += section['content']
+            segmented_sections.append(seg.cut(s))
+    except KeyError:
+        abort(400)
+    return {'sections': segmented_sections}
 
 
 if __name__ == "__main__":
