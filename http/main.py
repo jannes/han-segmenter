@@ -1,5 +1,6 @@
 from flask import Flask, request, abort
 import pkuseg
+from segment import segment
 
 server = Flask(__name__)
 seg = pkuseg.pkuseg()
@@ -22,7 +23,7 @@ def segment_single():
             abort(400)
     except KeyError:
         abort(400)
-    segmented = seg.cut(text)
+    segmented = segment(seg, text)
     return {'text': segmented}
 
 
@@ -47,7 +48,7 @@ def segment_multiple():
     for section in sections:
         if type(section) != str:
             abort(400)
-        segmented_sections.append(seg.cut(section))
+        segmented_sections.append(segment(seg, section))
     return {'sections': segmented_sections}
 
 
@@ -78,7 +79,7 @@ def segment_book():
                 s += text['title']
             s += section['title']
             s += section['content']
-            segmented_sections.append(seg.cut(s))
+            segmented_sections.append(segment(seg, s))
     except KeyError:
         abort(400)
     return {'sections': segmented_sections}
