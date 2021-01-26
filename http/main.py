@@ -1,9 +1,10 @@
 from flask import Flask, request, abort
 import pkuseg
-from segment import segment
+from segment import segment, get_dict_words
 
 server = Flask(__name__)
 seg = pkuseg.pkuseg()
+dict_words = get_dict_words()
 
 
 # JSON input schema:
@@ -19,11 +20,12 @@ def segment_single():
     body = request.get_json()
     try:
         text = body['text']
-        if type(text) != str:
+        dict_only = body['dict_only']
+        if type(text) != str or type(dict_only) != bool:
             abort(400)
     except KeyError:
         abort(400)
-    segmented = segment(seg, text)
+    segmented = segment(seg, text, dict_only, dict_words)
     return {'text': segmented}
 
 
@@ -40,15 +42,16 @@ def segment_multiple():
     body = request.get_json()
     try:
         sections = body['sections']
+        dict_only = body['dict_only']
     except KeyError:
         abort(400)
-    if type(sections) != list:
+    if type(sections) != list or type(dict_only) != bool:
         abort(400)
     segmented_sections = list()
     for section in sections:
         if type(section) != str:
             abort(400)
-        segmented_sections.append(segment(seg, section))
+        segmented_sections.append(segment(seg, section, dict_only, dict_words))
     return {'sections': segmented_sections}
 
 
@@ -69,7 +72,7 @@ def segment_book():
     text = request.get_json()
     segmented_sections = list()
     try:
-        if type(text['title']) != str:
+        if type(text['title']) != str or type(text['dict_only']) != bool:
             abort(400)
         for i, section in enumerate(text['sections']):
             if type(section['title']) != str or type(section['content']) != str:
@@ -79,7 +82,7 @@ def segment_book():
                 s += text['title']
             s += section['title']
             s += section['content']
-            segmented_sections.append(segment(seg, s))
+            segmented_sections.append(segment(seg, s, text['dict_only'], dict_words))
     except KeyError:
         abort(400)
     return {'sections': segmented_sections}

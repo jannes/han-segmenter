@@ -40,5 +40,5 @@ def segment(segmenter, text: str, dict_only=False, dict_words=None) -> List[str]
         presegments = re.split(REGEX_HAN, text)
         result = []
         for presegment in presegments:
-            result.extend(segmenter.cut(text))
+            result.extend(segmenter.cut(presegment))
         return result
