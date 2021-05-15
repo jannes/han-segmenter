@@ -1,0 +1,20 @@
+{
+    "book": {
+        "title": "诗文",
+        "author": "",
+        "preface_content": "",
+        "chapters": [
+            {
+                "title": "第一张",
+                "text": "牛街好，牛街好，我爱吃羊肉！再说只要脱离了这个泼妇，让我住驴街也可以！",
+                "subchapters": []
+            },
+            {
+                "title": "第二章",
+                "text": "牛街好，牛街好，我爱吃羊肉！再说只要脱离了这个泼妇，让我住驴街也可以！",
+                "subchapters": []
+            }
+        ]
+    },
+    "dict_only": true
+}

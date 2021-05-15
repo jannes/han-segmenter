@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hanseg
+  labels:
+    app: hanseg
+spec:
+  ports:
+    - port: 8080
+      targetPort: http
+  selector:
+    app: hanseg
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  hanseg
+  labels:
+    app: hanseg
+spec:
+  selector:
+    matchLabels:
+      app: hanseg
+  template:
+    metadata:
+      labels:
+        app: hanseg
+    spec:
+      containers:
+        - name: hanseg
+          image: hanseg:latest
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              containerPort: 80
