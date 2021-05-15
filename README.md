@@ -19,8 +19,6 @@ Small microservice for segmenting text.
 Used as segmentation engine for my vocabulary analyzer web app [jihanzi](https://www.jihanzi.com).
 
 ## Dependencies
+- fastapi
 - pkuseg
 - regex
-- flask
-- gunicorn
-
