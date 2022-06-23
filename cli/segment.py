@@ -5,7 +5,7 @@ import regex as re
 REGEX_HAN = re.compile('[^\p{Han}]+')
 
 def get_dict_words() -> Set[str]:
-    with open('dictionary.txt') as f:
+    with open('dictionary-fanjian.txt') as f:
         lines = f.readlines()
     return {line.strip() for line in lines if not line.startswith('#')}
 
